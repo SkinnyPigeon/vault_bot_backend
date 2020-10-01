@@ -14,14 +14,18 @@ app = Flask(__name__)
 app.config['ERROR_404_HELP'] = False
 CORS(app)
 
+from functions.connect_to_db import setup_connection, select_table_classes
+
 @app.route('/')
 def hello():
     return {"Hello": "Welcome to VaultBot"}
 
-@app.route('connect_to_db', methods=['post'])
+@app.route('/connect', methods=['post'])
 def connect():
     req_data = request.get_json()
     print(req_data)
+    connection = setup_connection(req_data['schema'], req_data['database'])
+    print(connection)
 
     return json.dumps(req_data)
 
