@@ -22,9 +22,22 @@ def setup_connection(schema, database):
     session = Session()
     return {'base': Base, 'metadata': metadata, 'engine': engine, 'session': session}
 
-def select_table_classes(hospital, source_base):
+def select_table_classes(base):
     tables = {}
-    for class_name in source_base._decl_class_registry.values():
-        if hasattr(class_name, '__table__') and class_name.__table__.fullname not in ['{hospital}.serums_ids'.format(hospital=hospital), '{hospital}.patient_rules'.format(hospital=hospital), '{hospital}.hospital_tags'.format(hospital=hospital), '{hospital}.hospital_doctors'.format(hospital=hospital)]:
+    for class_name in base._decl_class_registry.values():
+        if hasattr(class_name, '__table__'):
             tables.update({class_name.__table__.fullname: class_name})
     return tables
+
+def select_table_class_by_name(base, tablename):
+    print("SELECTING TABLE")
+    for class_name in base._decl_class_registry.values():
+        if hasattr(class_name, '__table__') and class_name.__table__.fullname == tablename:
+            return class_name
+
+def show_table_names(tables):
+    return {"tableNames": list(tables.keys())}
+
+def show_table_columns(base, table):
+    table = select_table_class_by_name(base, table)
+    return {"columnNames": list(table.__table__.columns.keys())}
