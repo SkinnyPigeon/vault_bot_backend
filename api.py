@@ -15,7 +15,7 @@ app.config['ERROR_404_HELP'] = False
 CORS(app)
 
 from functions.connect_to_db import setup_connection, select_table_classes, show_table_names, show_table_columns
-from functions.process_data_vault import control_objects_starter, hub_picker, hub_generator, fill_hubs
+from functions.process_data_vault import control_objects_starter, hub_picker, hub_generator, fill_hubs, select_satellite_names, link_generator, fill_satellites
 
 @app.route('/')
 def hello():
@@ -50,8 +50,13 @@ def satellite():
         'hub_event': []
     }
     hubs = fill_hubs(hubs, req_data)
+    satellite_names = select_satellite_names(req_data)
+    links['links'] = link_generator(satellite_names)
+    satellites['satellites'] = fill_satellites(satellite_names, req_data)
 
-    print(hubs)
+    print("HUBS: {}".format(hubs))
+    print("LINKS: {}".format(links))
+    print("SATELLITES: {}".format(satellites))
 
     return req_data
 
