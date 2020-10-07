@@ -21,7 +21,6 @@ def create_unique_schema_name(length):
     return '_' + ''.join((random.choice(letters_and_digits) for i in range(length)))
 
 def setup_save_connection(schema):
-    # class_registry = {}
     Base = declarative_base()
     metadata = MetaData(schema=schema)
     base = Base(metadata=schema)

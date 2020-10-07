@@ -40,4 +40,8 @@ def show_table_names(tables):
 
 def show_table_columns(base, table):
     table = select_table_class_by_name(base, table)
-    return {"columnNames": list(table.__table__.columns.keys())}
+    data = {}
+    for column in table.__table__.columns:
+        data.update({column.name: str(column.type).lower()})
+    # return {"columnNames": list(table.__table__.columns.keys())}
+    return data
