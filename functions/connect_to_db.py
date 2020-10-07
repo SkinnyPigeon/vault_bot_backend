@@ -9,7 +9,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 
-project_folder = os.path.expanduser('~/code/api_v3/')
+project_folder = os.path.expanduser('~/code/data_vault_maker_backend/')
 load_dotenv(os.path.join(project_folder, '.env'))
 PASSWORD = os.getenv('PASSWORD')
 

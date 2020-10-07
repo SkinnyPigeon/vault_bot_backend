@@ -15,6 +15,7 @@ app.config['ERROR_404_HELP'] = False
 CORS(app)
 
 from functions.connect_to_db import setup_connection, select_table_classes, show_table_names, show_table_columns
+from functions.process_data_vault import control_objects_starter, hub_picker, hub_generator, fill_hubs
 
 @app.route('/')
 def hello():
@@ -40,6 +41,18 @@ def table():
 @app.route('/satellite', methods=['post'])
 def satellite():
     req_data = request.get_json()
+    hubs, links, satellites = control_objects_starter(req_data['table'])
+    hub_keys = {
+        'hub_time':[],
+        'hub_person': [],
+        'hub_object': [],
+        'hub_location': [],
+        'hub_event': []
+    }
+    hubs = fill_hubs(hubs, req_data)
+
+    print(hubs)
+
     return req_data
 
 if __name__ == '__main__':
