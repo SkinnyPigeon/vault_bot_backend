@@ -43,5 +43,4 @@ def show_table_columns(base, table):
     data = {}
     for column in table.__table__.columns:
         data.update({column.name: str(column.type).lower()})
-    # return {"columnNames": list(table.__table__.columns.keys())}
     return data

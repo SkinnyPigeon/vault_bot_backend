@@ -42,16 +42,21 @@ def hub_generator(hub, keys):
 def fill_hubs(hubs, req_data):
     hub_keys = []
     hub_names = []
+    data_types = {}
     for keys, values in req_data['columns'].items():
         if req_data['columns'][keys]['satellite']:
             hub_names.append(hub_picker(req_data['columns'][keys]['satellite']))
             hub_names = list(dict.fromkeys(hub_names))
         if req_data['columns'][keys]['primaryKey']:
             hub_keys.append(keys)
+        data_type = {
+            keys: {'data_type': req_data['columns'][keys]['dataType']}
+        }
+        data_types.update(data_type)
 
     hubs_finished = []
     for hub in hub_names:
-        hubs_finished.append({'hub': hub, 'keys': hub_keys})
+        hubs_finished.append({'hub': hub, 'keys': hub_keys, 'data_types': data_types})
 
     hubs['hubs'] = hubs_finished
     return hubs
@@ -131,10 +136,17 @@ def fill_satellites(satellite_names, req_data):
             'satellite': satellite_name,
             'columns': [],
             'hub': hub_picker(satellite_name),
-            'hub_id': 0
+            'hub_id': 0,
+            'data_types': {}
         }
         for keys, values in req_data['columns'].items():
             if req_data['columns'][keys]['satellite'] == satellite_name:
                 satellite['columns'].append(keys)
+                data_type = {
+                    keys: {
+                        'data_type': req_data['columns'][keys]['dataType']
+                    }
+                }
+                satellite['data_types'].update(data_type)
         finished_satellites.append(satellite)
     return finished_satellites

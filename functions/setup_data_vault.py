@@ -4,7 +4,6 @@ from sqlalchemy.schema import CreateSchema
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import pandas as pd
-# pd.set_option('display.max_colwidth', -1)
 import datetime
 
 import os
@@ -22,7 +21,7 @@ def create_unique_schema_name(length):
     letters_and_digits = string.ascii_lowercase + string.digits
     return '_' + ''.join((random.choice(letters_and_digits) for i in range(length)))
 
-def setup_save_connection(schema):
+def setup_dv_connection(schema):
     Base = declarative_base()
     metadata = MetaData(schema=schema)
     base = Base(metadata=schema)
@@ -38,23 +37,6 @@ def create_unique_schema(connection, schema):
     except:
         return connection
 
-def insert_into_table(connection, hubs, links, satellites):
-    save_table = Table('save_table', connection['metadata'],
-        Column('id', Integer, primary_key=True),
-        Column('hubs', JSON),
-        Column('links', JSON),
-        Column('satellites', JSON)
-    )
-    connection['metadata'].create_all(connection['engine'])
-    with connection['engine'].connect() as conn:
-        conn.execute(
-            save_table.insert(),
-            hubs = hubs,
-            links = links,
-            satellites = satellites
-        )
-    connection['engine'].dispose()
-
 def retrieve_from_table(connection):
     save_table = Table('save_table', connection['metadata'],
         Column('id', Integer, primary_key=True),
@@ -64,6 +46,52 @@ def retrieve_from_table(connection):
     )
     connection['metadata'].create_all(connection['engine'])
     df = pd.read_sql(connection['session'].query(save_table).statement, con=connection['engine'])
-    # print(df['hubs'])
     connection['engine'].dispose()
     return df
+    
+
+def get_hub_keys(hubs):
+    hub_keys = {
+        "hub_time": {},
+        "hub_person": {},
+        "hub_object": {},
+        "hub_location": {},
+        "hub_event": {}
+    }
+    for row in hubs:
+        for hub in row['hubs']:
+            keys = hub['keys']
+            for key in keys:
+                hub_keys[hub['hub']].update({key: hub['data_types'][key]})
+    return hub_keys
+
+connection = setup_dv_connection("_490u7")
+df = retrieve_from_table(connection)
+hub_keys = get_hub_keys(df['hubs'])
+print(hub_keys)
+{
+    'hub_time': {
+        'einri': {'data_type': 'varchar'}, 
+        'falnr': {'data_type': 'varchar'}, 
+        'patnr': {'data_type': 'integer'}, 
+        'pernr': {'data_type': 'varchar'}
+    }, 
+    'hub_person': {
+        'id': {'data_type': 'integer'}
+    }, 
+    'hub_object': {
+        'einri': {'data_type': 'varchar'}, 
+        'patnr': {'data_type': 'integer'}, 
+        'falnr': {'data_type': 'varchar'}, 
+        'pernr': {'data_type': 'varchar'}
+    }, 
+    'hub_location': {
+        'patnr': {'data_type': 'integer'}
+    }, 
+    'hub_event': {
+        'einri': {'data_type': 'varchar'}, 
+        'falnr': {'data_type': 'varchar'}, 
+        'patnr': {'data_type': 'integer'}, 
+        'pernr': {'data_type': 'varchar'}
+    }
+}

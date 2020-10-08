@@ -16,7 +16,7 @@ CORS(app)
 
 from functions.connect_to_db import setup_connection, select_table_classes, show_table_names, show_table_columns
 from functions.process_data_vault import control_objects_starter, fill_hubs, select_satellite_names, link_generator, fill_satellites
-from functions.save_to_db import create_unique_schema_name, setup_save_connection, create_unique_schema, insert_into_table
+from functions.save_to_db import create_unique_schema_name, setup_save_connection, create_unique_schema, insert_into_table, retrieve_from_table
 
 @app.route('/')
 def hello():
@@ -69,7 +69,11 @@ def satellite():
 @app.route('/vaultbot', methods=['post'])
 def vaultbot():
     req_data = request.get_json()
+    print(req_data)
 
+    connection = setup_save_connection(req_data['saveSchema'])
+    connection = create_unique_schema(connection, req_data['saveSchema'])
+    retrieve_from_table(connection)
     return req_data
 
 if __name__ == '__main__':
