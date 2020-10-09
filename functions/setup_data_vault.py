@@ -10,6 +10,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 
+
 project_folder = os.path.expanduser('~/code/data_vault_maker_backend/')
 load_dotenv(os.path.join(project_folder, '.env'))
 PASSWORD = os.getenv('PASSWORD')
@@ -65,33 +66,39 @@ def get_hub_keys(hubs):
                 hub_keys[hub['hub']].update({key: hub['data_types'][key]})
     return hub_keys
 
-connection = setup_dv_connection("_490u7")
+connection = setup_dv_connection("_kqljk")
 df = retrieve_from_table(connection)
-hub_keys = get_hub_keys(df['hubs'])
-print(hub_keys)
-{
-    'hub_time': {
-        'einri': {'data_type': 'varchar'}, 
-        'falnr': {'data_type': 'varchar'}, 
-        'patnr': {'data_type': 'integer'}, 
-        'pernr': {'data_type': 'varchar'}
-    }, 
-    'hub_person': {
-        'id': {'data_type': 'integer'}
-    }, 
-    'hub_object': {
-        'einri': {'data_type': 'varchar'}, 
-        'patnr': {'data_type': 'integer'}, 
-        'falnr': {'data_type': 'varchar'}, 
-        'pernr': {'data_type': 'varchar'}
-    }, 
-    'hub_location': {
-        'patnr': {'data_type': 'integer'}
-    }, 
-    'hub_event': {
-        'einri': {'data_type': 'varchar'}, 
-        'falnr': {'data_type': 'varchar'}, 
-        'patnr': {'data_type': 'integer'}, 
-        'pernr': {'data_type': 'varchar'}
-    }
-}
+# print(df['hubs'])
+
+def create_satellites(satellites):
+    for keys, values in satellites.items():
+        print(values)
+
+create_satellites(df['satellites'])
+# print(hub_keys)
+# {
+#     'hub_time': {
+#         'einri': {'data_type': 'varchar'}, 
+#         'falnr': {'data_type': 'varchar'}, 
+#         'patnr': {'data_type': 'integer'}, 
+#         'pernr': {'data_type': 'varchar'}
+#     }, 
+#     'hub_person': {
+#         'id': {'data_type': 'integer'}
+#     }, 
+#     'hub_object': {
+#         'einri': {'data_type': 'varchar'}, 
+#         'patnr': {'data_type': 'integer'}, 
+#         'falnr': {'data_type': 'varchar'}, 
+#         'pernr': {'data_type': 'varchar'}
+#     }, 
+#     'hub_location': {
+#         'patnr': {'data_type': 'integer'}
+#     }, 
+#     'hub_event': {
+#         'einri': {'data_type': 'varchar'}, 
+#         'falnr': {'data_type': 'varchar'}, 
+#         'patnr': {'data_type': 'integer'}, 
+#         'pernr': {'data_type': 'varchar'}
+#     }
+# }

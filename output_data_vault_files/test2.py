@@ -6,11 +6,12 @@ Base = declarative_base()
 
 from sqlalchemy import Column, Integer, String, Numeric, DateTime, Text, ForeignKey, create_engine
 from sqlalchemy.types import TIMESTAMP
+
 import os
 from dotenv import load_dotenv
 from pathlib import Path
 
-project_folder = os.path.expanduser('~/code/data_vault_generator/')
+project_folder = os.path.expanduser('~/code/data_vault_maker_backend/')
 load_dotenv(os.path.join(project_folder, '.env'))
 PASSWORD = os.getenv('PASSWORD')
 
@@ -38,7 +39,6 @@ column_types = {
 hub_time={'__tablename__': 'hub_time',
 '__table_args__':{'schema':'public'},
 'id': Column(column_types['integer'], primary_key=True)}
-
 primary_keys = []
 for keys, values in {'einri': {'data_type': 'varchar'}, 'falnr': {'data_type': 'varchar'}, 'patnr': {'data_type': 'integer'}, 'pernr': {'data_type': 'varchar'}}.items():
     primary_keys.append({keys: Column(column_types[values['data_type']])})
@@ -50,9 +50,8 @@ time = type('PUBLIC_Hub_Time',(Base,),hub_time)
 hub_person={'__tablename__': 'hub_person',
 '__table_args__':{'schema':'public'},
 'id': Column(column_types['integer'], primary_key=True)}
-
 primary_keys = []
-for keys, values in {'pid': {'data_type': 'integer'}}.items():
+for keys, values in {}.items():
     primary_keys.append({keys: Column(column_types[values['data_type']])})
 for key in primary_keys:
     hub_person.update(key)
@@ -74,7 +73,7 @@ hub_location={'__tablename__': 'hub_location',
 '__table_args__':{'schema':'public'},
 'id': Column(column_types['integer'], primary_key=True)}
 primary_keys = []
-for keys, values in {'patnr': {'data_type': 'integer'}}.items():
+for keys, values in {}.items():
     primary_keys.append({keys: Column(column_types[values['data_type']])})
 for key in primary_keys:
     hub_location.update(key)
@@ -91,8 +90,7 @@ for key in primary_keys:
     hub_event.update(key)
 
 event = type('PUBLIC_Hub_Event',(Base,),hub_event)
-
-    
+        
 
 hub_time = get_class_by_tablename("public.hub_time", Base)
 hub_person = get_class_by_tablename("public.hub_person", Base)
@@ -101,6 +99,7 @@ hub_location = get_class_by_tablename("public.hub_location", Base)
 hub_event = get_class_by_tablename("public.hub_event", Base)
 
 # Links
+
 person_time_link={'__tablename__': 'person_time_link',
 '__table_args__':{'schema': 'public'},
 'id': Column(column_types['integer'], primary_key=True),
@@ -202,7 +201,37 @@ location_event = type('PUBLIC_Location_Event_Link',(Base,),location_event_link)
 ###
 
 # Satellites
+    
+new_satellite={'__tablename__':'sat_object_diagnostic_details',
+'__table_args__':{'schema':  'public'},
+'id': Column(column_types['integer'], primary_key=True),
+'source_table': Column(column_types['string']),
+'hub_id': Column(column_types['integer'], ForeignKey(hub_object.id))}
 
+columns = []
+for keys, values in {'lfdnr': {'data_type': 'integer'}, 'dkey1': {'data_type': 'varchar'}}.items():
+    columns.append({keys: Column(column_types[values['data_type']])})
+for column in columns:
+    new_satellite.update(column)
+
+
+object_diagnostic_details = type('PUBLIC_Sat_Object_Diagnostic_Details',(Base,), new_satellite)
+            
+new_satellite={'__tablename__':'sat_event_episode_type',
+'__table_args__':{'schema':  'public'},
+'id': Column(column_types['integer'], primary_key=True),
+'source_table': Column(column_types['string']),
+'hub_id': Column(column_types['integer'], ForeignKey(hub_event.id))}
+
+columns = []
+for keys, values in {'falar': {'data_type': 'varchar'}, 'bekat': {'data_type': 'varchar'}, 'einzg': {'data_type': 'varchar'}, 'statu': {'data_type': 'varchar'}, 'krzan': {'data_type': 'varchar'}, 'storn': {'data_type': 'varchar'}, 'casetx': {'data_type': 'varchar'}, 'fatnx': {'data_type': 'varchar'}}.items():
+    columns.append({keys: Column(column_types[values['data_type']])})
+for column in columns:
+    new_satellite.update(column)
+
+
+event_episode_type = type('PUBLIC_Sat_Event_Episode_Type',(Base,), new_satellite)
+            
 new_satellite={'__tablename__':'sat_time_episode_date',
 '__table_args__':{'schema':  'public'},
 'id': Column(column_types['integer'], primary_key=True),
@@ -218,19 +247,5 @@ for column in columns:
 
 time_episode_date = type('PUBLIC_Sat_Time_Episode_Date',(Base,), new_satellite)
             
-new_satellite={'__tablename__':'sat_object_diagnostic_details',
-'__table_args__':{'schema':  'public'},
-'id': Column(column_types['integer'], primary_key=True),
-'source_table': Column(column_types['string']),
-'hub_id': Column(column_types['integer'], ForeignKey(hub_object.id))}
-
-columns = []
-for keys, values in {'lfdnr': {'data_type': 'integer'}, 'dkey1': {'data_type': 'varchar'}}.items():
-    columns.append({keys: Column(column_types[values['data_type']])})
-for column in columns:
-    new_satellite.update(column)
-
-
-object_diagnostic_details = type('PUBLIC_Sat_Object_Diagnostic_Details',(Base,), new_satellite)
-
 Base.metadata.create_all(engine)
+    

@@ -17,6 +17,8 @@ CORS(app)
 from functions.connect_to_db import setup_connection, select_table_classes, show_table_names, show_table_columns
 from functions.process_data_vault import control_objects_starter, fill_hubs, select_satellite_names, link_generator, fill_satellites
 from functions.save_to_db import create_unique_schema_name, setup_save_connection, create_unique_schema, insert_into_table, retrieve_from_table
+from functions.setup_data_vault import get_hub_keys
+from functions.data_vault_scripting import data_vault_boilerplate, create_hubs, create_links, create_satellites, finish_data_vault_script
 
 @app.route('/')
 def hello():
@@ -73,7 +75,14 @@ def vaultbot():
 
     connection = setup_save_connection(req_data['saveSchema'])
     connection = create_unique_schema(connection, req_data['saveSchema'])
-    retrieve_from_table(connection)
+    df = retrieve_from_table(connection)
+    data_vault_boilerplate("test2", "public", "vault_bot_out")
+    print(df['hubs'])
+    hub_keys = get_hub_keys(df['hubs'])
+    create_hubs("test2", "public", hub_keys)
+    create_links("test2", "public")
+    create_satellites("test2", "public", df['satellites'])
+    finish_data_vault_script("test2", "public")
     return req_data
 
 if __name__ == '__main__':

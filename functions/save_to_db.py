@@ -64,6 +64,5 @@ def retrieve_from_table(connection):
     )
     connection['metadata'].create_all(connection['engine'])
     df = pd.read_sql(connection['session'].query(save_table).statement, con=connection['engine'])
-    # print(df['hubs'])
     connection['engine'].dispose()
     return df

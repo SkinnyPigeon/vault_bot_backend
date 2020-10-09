@@ -1,4 +1,3 @@
-
 def control_objects_starter(table):
     hubs = {
         'table': table,
@@ -148,5 +147,6 @@ def fill_satellites(satellite_names, req_data):
                     }
                 }
                 satellite['data_types'].update(data_type)
+                satellite.update({'source_table': req_data['table']})
         finished_satellites.append(satellite)
     return finished_satellites
